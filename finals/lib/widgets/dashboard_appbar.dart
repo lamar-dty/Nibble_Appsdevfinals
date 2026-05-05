@@ -1,0 +1,86 @@
+import 'package:flutter/material.dart';
+import '../constants/colors.dart';
+import '../store/auth_store.dart';
+import 'manage_account_sheet.dart';
+import '../constants/app_colors.dart';
+
+class DashboardAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final VoidCallback? onMenuTap;
+
+  const DashboardAppBar({super.key, this.onMenuTap});
+
+  @override
+  Size get preferredSize => const Size.fromHeight(64);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: AppColors.bg,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.transparent,
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      titleSpacing: 0,
+      title: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // ── Hamburger ────────────────────────────
+            GestureDetector(
+              onTap: onMenuTap,
+              child: const _HamburgerIcon(),
+            ),
+
+            // ── Avatar ───────────────────────────────
+            GestureDetector(
+              onTap: () {},
+              child: ListenableBuilder(
+                listenable: AuthStore.instance,
+                builder: (_, __) => AppAvatar(
+                  seed: AuthStore.instance.avatarSeed.isNotEmpty
+                      ? AuthStore.instance.avatarSeed
+                      : 'bunny',
+                  size: 44,
+                  showBorder: true,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HamburgerIcon extends StatelessWidget {
+  const _HamburgerIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 28,
+      height: 20,
+      child: CustomPaint(
+        painter: _HamburgerPainter(),
+      ),
+    );
+  }
+}
+
+class _HamburgerPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = AppColors.accent
+      ..strokeWidth = 3.0
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(Offset(0, 0), Offset(size.width, 0), paint);
+    canvas.drawLine(Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
+    canvas.drawLine(Offset(0, size.height), Offset(size.width, size.height), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter _) => true;
+}
